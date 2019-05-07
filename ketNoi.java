@@ -17,10 +17,10 @@ import java.sql.Statement;
 public class ketNoi {
     Connection cnn;
     Statement stmt;
-    void ketnoi(){
+    void ketNoi(){
         try {
             Class.forName("com.hxtt.sql.access.AccessDriver");//nap driver
-            cnn=DriverManager.getConnection("jdbc:access:/F:\\Java\\doAnJava\\cSoDuLieu.mdb");//tạo đối tượng
+            cnn=DriverManager.getConnection("jdbc:access:/F:\\Java\\doAnJava\\coSoDuLieu.mdb");//tạo đối tượng
             stmt=cnn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);//đối tuowngh truy vấn
             System.out.println("Kết nối thành công");
         } catch (Exception e) {

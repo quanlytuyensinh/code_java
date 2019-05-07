@@ -4,77 +4,23 @@
  * and open the template in the editor.
  */
 package code_java;
-
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Vector;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author Tran Thang
  */
-public class addSV extends javax.swing.JFrame {
+public class Sua extends javax.swing.JFrame {
 
     /**
-     * Creates new form addSV
+     * Creates new form Sua
      */
     ketNoi kn = new ketNoi();
     Vector dsKhoa;
-    private void LoadKhoa()
-    {
-        try
-        {
-            kn.ketNoi();
-            String sql="select * from nganh";
-            ResultSet rs = kn.stmt.executeQuery(sql);
-            dsKhoa=new Vector();
-            cbNganh.removeAllItems();      
-            while(rs.next())
-            {
-               Object o1 = rs.getObject(1);//mada
-                dsKhoa.addElement(o1);
-                
-                Object o2 = rs.getObject(1);//tenda
-                cbNganh.addItem(o2);
-            }
-            kn.ngatketnoi();
-        }
-        catch(Exception ex)
-        {
-            System.out.println("Lỗi load dữ liệu: "+ ex.toString());
-        }
-    }
+    String luu;
     
-    void nhapLai(){
-        txtHoTen.setText("");
-        txtNgaySinh.setText("");
-        txtSBD.setText("");
-        txtToan.setText("");
-        txtVan.setText("");
-        txtAnh.setText("");
-        btNam.setSelected(false);
-        btNu.setSelected(false);
-    }
-    
-    boolean traSBD(){
-        try {
-            kn.ketNoi();
-            String sql = "select SBD from hoSoSinhVien where SBD='"+txtSBD.getText()+"'";
-            kn.stmt = kn.cnn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = kn.stmt.executeQuery(sql);
-            if(rs.next()==true){
-                return true;
-            }
-            kn.ngatketnoi();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.toString());
-        }
-        return false;
-    }
     boolean kiemtra(){
         String err="";
         if(txtSBD.getText().length()==0){
@@ -84,11 +30,13 @@ public class addSV extends javax.swing.JFrame {
             try {
                 Long.parseLong(txtSBD.getText());
             } catch (Exception e) {
-                err+="Số báo danh phải là dạng số";
+                JOptionPane.showMessageDialog(this, "Số báo danh phải là dạng số");
             }
         }
-        if(traSBD()==true){
-            err+="số báo danh đã tồn tại\n";
+        
+        if(!txtSBD.getText().equals(luu)){
+            if(traSBD()==true)
+                err+="Bạn không thể sửa thành số báo danh này";
         }
         
         if(txtHoTen.getText().length()==0){
@@ -112,8 +60,7 @@ public class addSV extends javax.swing.JFrame {
             try {
                 Integer.parseInt(txtToan.getText());
             } catch (Exception e) {
-                err+="điểm phải là dạng số";
-                
+                JOptionPane.showMessageDialog(this, "điểm phải là dạng số");
             }
         }
         if(txtVan.getText().length()==0){
@@ -123,8 +70,7 @@ public class addSV extends javax.swing.JFrame {
             try {
                 Integer.parseInt(txtVan.getText());
             } catch (Exception e) {
-                err+="điểm phải là dạng số";
-               
+                JOptionPane.showMessageDialog(this, "điểm phải là dạng số");
             }
         }
         if(txtAnh.getText().length()==0){
@@ -134,7 +80,7 @@ public class addSV extends javax.swing.JFrame {
             try {
                 Integer.parseInt(txtAnh.getText());
             } catch (Exception e) {
-                err+="điểm phải là dạng số";
+                JOptionPane.showMessageDialog(this, "điểm phải là dạng số");
             }
         }
         if(!err.equals("")){
@@ -143,10 +89,64 @@ public class addSV extends javax.swing.JFrame {
         }
         return true;
     }
-    public addSV() {
+    
+    boolean traSBD(){
+        try {
+            kn.ketNoi();
+            String sql = "select SBD from hoSoSinhVien where SBD='"+txtSBD.getText()+"'";
+            kn.stmt = kn.cnn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = kn.stmt.executeQuery(sql);
+            if(rs.next()==true){
+                return true;
+            }
+            kn.ngatketnoi();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.toString());
+        }
+        return false;
+    }
+    
+    private void LoadKhoa()
+    {
+        try
+        {
+            kn.ketNoi();
+            String sql="select * from nganh";
+            ResultSet rs = kn.stmt.executeQuery(sql);
+            dsKhoa=new Vector();
+            cbNganh.removeAllItems();      
+            while(rs.next())
+            {
+                Object o1 = rs.getObject(1);//mada
+                dsKhoa.addElement(o1);
+                Object o2 = rs.getObject(1);//tenda
+                cbNganh.addItem(o2);
+            }
+            kn.ngatketnoi();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Lỗi load dữ liệu: "+ ex.toString());
+        }
+    }
+    public Sua(String[] dl) {
         initComponents();
         LoadKhoa();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        txtSBD.setText(dl[0]);
+        luu=dl[0];
+        txtHoTen.setText(dl[1]);
+        if("false".equalsIgnoreCase(dl[2]))
+            btNam.setSelected(true);
+        else
+            btNu.setSelected(true);
+        txtNgaySinh.setText(dl[3].substring(0, 10));
+        txtToan.setText(dl[5]);
+        txtVan.setText(dl[6]);
+        txtAnh.setText(dl[7]);
+        
+        
     }
 
     /**
@@ -158,53 +158,30 @@ public class addSV extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        txtToan = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
+        txtAnh = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
         txtSBD = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
         txtHoTen = new javax.swing.JTextField();
         txtNgaySinh = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         btNam = new javax.swing.JRadioButton();
+        jLabel3 = new javax.swing.JLabel();
         btNu = new javax.swing.JRadioButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         txtVan = new javax.swing.JTextField();
-        txtToan = new javax.swing.JTextField();
-        txtAnh = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         cbNganh = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel2.setText("Số báo danh:");
-
-        jLabel3.setText("Họ và Tên:");
-
-        jLabel9.setText("Giới tính:");
-
-        jLabel10.setText("Ngày sinh:");
-
-        jLabel13.setText(" Mã ngành:");
-
-        jLabel14.setText("Toán:");
-
-        jLabel15.setText("Văn:");
-
-        jLabel16.setText("Anh:");
-
-        btNam.setText("Nam");
-        btNam.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btNamActionPerformed(evt);
-            }
-        });
-
-        btNu.setText("Nữ");
+        jLabel13.setText("Mã Ngành:");
 
         txtToan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -212,12 +189,18 @@ public class addSV extends javax.swing.JFrame {
             }
         });
 
+        jLabel14.setText("Toán:");
+
+        jLabel15.setText("Văn:");
+
         jButton1.setText("Thoát");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
+
+        jLabel16.setText("Anh:");
 
         jButton2.setText("Nhập Lại");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -232,6 +215,23 @@ public class addSV extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
+
+        jLabel2.setText("Số báo danh:");
+
+        btNam.setText("Nam");
+        btNam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btNamActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Họ và Tên:");
+
+        btNu.setText("Nữ");
+
+        jLabel9.setText("Giới tính:");
+
+        jLabel10.setText("Ngày sinh:");
 
         cbNganh.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -258,7 +258,7 @@ public class addSV extends javax.swing.JFrame {
                             .addComponent(txtSBD, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
                             .addComponent(txtHoTen)
                             .addComponent(txtNgaySinh)
-                            .addComponent(cbNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(cbNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -271,7 +271,7 @@ public class addSV extends javax.swing.JFrame {
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtAnh, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3)
@@ -313,7 +313,7 @@ public class addSV extends javax.swing.JFrame {
                     .addComponent(txtAnh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtToan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtVan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
@@ -328,10 +328,6 @@ public class addSV extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtToanActionPerformed
 
-    private void btNamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btNamActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btNamActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         int kq = JOptionPane.showConfirmDialog(this, "Bạn có muốn thoat!");
@@ -342,30 +338,39 @@ public class addSV extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        nhapLai();
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         if(kiemtra()==true){
-            try {
-                kn.ketNoi();
-                String sql1="insert into hoSoSinhVien(SBD, HoTen, GioiTinh, NgaySinh, MaNganh) "
-                        +"values('"+txtSBD.getText()+"','"+txtHoTen.getText()+"','"+btNu.isSelected()
-                        +"','"+txtNgaySinh.getText()+"','"+dsKhoa.get(cbNganh.getSelectedIndex())+"')";
-                kn.stmt.executeUpdate(sql1);
-                String sql2="insert into Diem(MaSo, Toan, Van, Anh)"
-                        +"values('"+txtSBD.getText()+"','"+txtToan.getText()+"','"+txtVan.getText()+"','"+txtAnh.getText()+"')";
-                kn.stmt.executeUpdate(sql2);
-                JOptionPane.showMessageDialog(this, "Đã đăng ký thành công");
-                kn.ngatketnoi();
-                
-                nhapLai();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,"sql 1: "+e.toString());
-            }
+            try
+        {
+            kn.ketNoi();
+            String sql="update hoSoSinhVien set HoTen='"+txtHoTen.getText()
+                    +"',GioiTinh='"+!btNam.isSelected()
+                    +"', NgaySinh='"+txtNgaySinh.getText()
+                    +"', MaNganh='"+dsKhoa.get(cbNganh.getSelectedIndex())+"' where SBD='"+txtSBD.getText()+"'";
+            String sql1="update Diem set Toan='"+txtToan.getText()
+                    +"',Van='"+txtVan.getText()
+                    +"', Anh='"+txtAnh.getText()+"' where MaSo='"+txtSBD.getText()+"'";
+            JOptionPane.showMessageDialog(this, "Đã lưu thông tin");
+            kn.stmt.executeUpdate(sql);
+            kn.stmt.executeUpdate(sql1);
+            kn.ngatketnoi();
         }
+        catch(Exception ex)
+        {
+            JOptionPane.showMessageDialog(this, "Lỗi sql1 "+ex.toString());
+        }   
+        }
+        
+
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btNamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btNamActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btNamActionPerformed
 
     /**
      * @param args the command line arguments
@@ -384,20 +389,20 @@ public class addSV extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(addSV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Sua.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(addSV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Sua.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(addSV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Sua.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(addSV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Sua.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                //new addSV().setVisible(true);
+             //   new Sua().setVisible(true);
             }
         });
     }
